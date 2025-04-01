@@ -290,7 +290,7 @@
        </div>
 
     {:else if gameStatus === 'loading'}
-       <div class="text-center text-xl font-semibold">Loading Game...</div>
+    <div class="text-center text-xl font-semibold">Loading Game...</div>
     {/if}
 
   </main>
