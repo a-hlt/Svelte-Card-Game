@@ -1,111 +1,130 @@
 // src/routes/auth/+page.server.ts
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
+import prisma from '$lib/server/prisma';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken'; // Import jwt
+import { JWT_SECRET } from '$env/static/private'; // Importe le secret depuis .env (sécurisé)
 
-// --- Stockage en mémoire (NON SÉCURISÉ, TEMPORAIRE) ---
-// Simule une base de données utilisateurs. Sera vidé à chaque redémarrage du serveur !
-const usersStore = new Map<string, { email: string; password: string }>();
+// Type pour le payload du JWT (ce qu'on met dedans)
+interface JWTPayload {
+	userId: number; // Stocker l'ID utilisateur est plus courant et sûr que l'email
+	email: string; // Peut être utile, mais l'ID suffit souvent
+	// Tu peux ajouter d'autres infos non sensibles si besoin (ex: role)
+}
 
-// Optionnel : pré-remplir un utilisateur pour tester le login rapidement
-// usersStore.set('test@test.com', { email: 'test@test.com', password: 'password123' });
-// console.log('Initial usersStore:', usersStore);
-
-export const load: PageServerLoad = async ({ locals }) => {
-	// Si l'utilisateur est déjà connecté (via un cookie par exemple),
-	// on peut le rediriger vers une autre page.
-	// Pour l'instant, on ne gère pas la session ici, mais c'est là que ça pourrait se faire.
-	// if (locals.user) {
-	//     throw redirect(303, '/dashboard');
-	// }
-	return {}; // Pas besoin de charger de données spécifiques pour le formulaire
-};
+// Durée de validité du token (ex: 1 heure, 7 jours, etc.)
+const JWT_EXPIRATION = '7d'; // 7 jours pour cet exemple
 
 export const actions: Actions = {
-	// --- Action pour le Login ---
 	login: async ({ request, cookies }) => {
 		const data = await request.formData();
 		const email = data.get('email')?.toString();
 		const password = data.get('password')?.toString();
 
-		// Validation simple
 		if (!email || !password) {
-			return fail(400, { email, error: 'Veuillez fournir un email et un mot de passe.' });
+			return fail(400, { email, error: 'Email et mot de passe requis.' });
 		}
 
-		console.log('[Login Attempt]', { email });
+		try {
+			const user = await prisma.user.findUnique({ where: { email } });
 
-		const existingUser = usersStore.get(email);
+			if (!user) {
+				return fail(401, { email, error: 'Identifiants incorrects.' });
+			}
 
-		if (!existingUser || existingUser.password !== password) {
-			console.log('[Login Failed] Invalid credentials for:', email);
-			// Important : ne pas donner d'indice si c'est l'email ou le mdp qui est faux
-			return fail(401, { email, error: 'Email ou mot de passe incorrect.' });
+			const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+
+			if (!passwordMatch) {
+				return fail(401, { email, error: 'Identifiants incorrects.' });
+			}
+
+			// --- Création du Payload JWT ---
+			const payload: JWTPayload = {
+				userId: user.id,
+				email: user.email
+			};
+
+			// --- Signature du Token ---
+			const token = jwt.sign(payload, JWT_SECRET, {
+				expiresIn: JWT_EXPIRATION // Définit la durée de validité
+			});
+
+			// --- Envoi du Token via Cookie HttpOnly ---
+			cookies.set('authToken', token, {
+				// Nomme le cookie 'authToken' (ou autre)
+				path: '/',
+				httpOnly: true, // Empêche l'accès via JS côté client (sécurité XSS)
+				secure: process.env.NODE_ENV === 'production', // True si en HTTPS
+				sameSite: 'lax', // Protection CSRF
+				maxAge: 60 * 60 * 24 * 7 // Doit correspondre ou être > à l'expiration du JWT (ici 7 jours en secondes)
+			});
+
+			console.log(`[Login Success] JWT created for user ${user.email}`);
+			throw redirect(303, '/'); // Redirige vers la page d'accueil
+		} catch (error) {
+			console.error('[Login Action Error]', error);
+			return fail(500, { email, error: 'Erreur serveur lors de la connexion.' });
 		}
-
-		// --- Succès du Login ---
-		console.log('[Login Success]', { email });
-		// Simuler une session en mettant un cookie (très basique)
-		// Dans une vraie app, ce serait un token JWT ou un ID de session sécurisé
-		cookies.set('session_user_email', email, {
-			path: '/',
-			httpOnly: true, // Important pour la sécurité (non accessible par JS client)
-			secure: process.env.NODE_ENV === 'production', // Utiliser https en production
-			sameSite: 'lax', // Protection CSRF
-			maxAge: 60 * 60 * 24 * 7 // 1 semaine
-		});
-
-		// Rediriger vers une page après le login (ex: tableau de bord)
-		// Remplacer '/dashboard' par la page de destination souhaitée
-		throw redirect(303, '/'); // Redirige vers la page d'accueil pour l'exemple
 	},
 
-	// --- Action pour l'Inscription (Register) ---
 	register: async ({ request, cookies }) => {
 		const data = await request.formData();
 		const email = data.get('email')?.toString();
 		const password = data.get('password')?.toString();
 		const confirmPassword = data.get('confirmPassword')?.toString();
 
-		// Validations
-		if (!email || !password || !confirmPassword) {
-			return fail(400, { email, error: 'Tous les champs sont requis.' });
+		// ... (validations inchangées) ...
+		if (!email || !password || !confirmPassword)
+			return fail(400, { email, error: 'Tous les champs requis.' });
+		if (password !== confirmPassword)
+			return fail(400, { email, error: 'Mots de passe non identiques.' });
+		if (password.length < 8) return fail(400, { email, error: 'Mot de passe trop court (8 min).' });
+
+		try {
+			const existingUser = await prisma.user.findUnique({ where: { email } });
+			if (existingUser) {
+				return fail(409, { email, error: 'Email déjà utilisé.' });
+			}
+
+			const passwordHash = await bcrypt.hash(password, 10);
+
+			const newUser = await prisma.user.create({
+				data: { email, passwordHash }
+			});
+
+			// --- Création du Payload JWT pour le nouvel utilisateur ---
+			const payload: JWTPayload = {
+				userId: newUser.id,
+				email: newUser.email
+			};
+
+			// --- Signature du Token ---
+			const token = jwt.sign(payload, JWT_SECRET, {
+				expiresIn: JWT_EXPIRATION
+			});
+
+			// --- Envoi du Token via Cookie HttpOnly ---
+			cookies.set('authToken', token, {
+				path: '/',
+				httpOnly: true,
+				secure: process.env.NODE_ENV === 'production',
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 * 7 // 7 jours
+			});
+
+			console.log(`[Register Success] User ${newUser.email} created and JWT issued.`);
+			throw redirect(303, '/'); // Redirige après inscription réussie
+		} catch (error) {
+			console.error('[Register Action Error]', error);
+			return fail(500, { email, error: "Erreur serveur lors de l'inscription." });
 		}
-		if (password !== confirmPassword) {
-			return fail(400, { email, error: 'Les mots de passe ne correspondent pas.' });
-		}
-		// Ajoute ici d'autres validations (longueur mdp, format email...) si nécessaire
-
-		console.log('[Register Attempt]', { email });
-
-		if (usersStore.has(email)) {
-			console.log('[Register Failed] Email already exists:', email);
-			return fail(409, { email, error: 'Cet email est déjà utilisé.' }); // 409 Conflict
-		}
-
-		// --- Succès de l'inscription ---
-		// !! Stockage en clair - NE PAS FAIRE EN PRODUCTION !!
-		usersStore.set(email, { email, password });
-		console.log('[Register Success] User added:', { email });
-		console.log('Current usersStore:', usersStore);
-
-		// Optionnel : Connecter l'utilisateur directement après l'inscription
-		cookies.set('session_user_email', email, {
-			path: '/',
-			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'lax',
-			maxAge: 60 * 60 * 24 * 7 // 1 semaine
-		});
-
-		// Rediriger vers une page après l'inscription
-		throw redirect(303, '/'); // Redirige vers la page d'accueil pour l'exemple
 	},
 
-	// --- Action pour la Déconnexion (Logout) ---
-	// Tu auras besoin d'un bouton quelque part dans ton app qui poste vers "?/logout"
 	logout: async ({ cookies }) => {
-		console.log('[Logout Action] Clearing session cookie');
-		cookies.delete('session_user_email', { path: '/' });
-		throw redirect(303, '/auth'); // Redirige vers la page de login
+		// Pour déconnecter, on supprime simplement le cookie contenant le JWT
+		console.log('[Logout Action] Clearing authToken cookie');
+		cookies.delete('authToken', { path: '/' }); // Assure-toi de supprimer le bon cookie
+		throw redirect(303, '/auth');
 	}
 };
