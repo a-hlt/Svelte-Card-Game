@@ -1,0 +1,54 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  username        String?   @unique
+  hashedPassword  String
+  profileImageUrl String?
+  balance         Decimal   @default(1000.00)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  gameHistory     GameHistory[]
+}
+
+model GameHistory {
+  id                  String    @id @default(cuid())
+  userId              String
+  playedAt            DateTime  @default(now())
+
+  betAmount           Decimal
+  outcome             GameOutcome
+  payoutAmount        Decimal
+
+  initialPlayerHand   String
+  initialDealerUpCard String
+  finalPlayerHand     String
+  finalDealerHand     String
+
+
+  playerScore         Int
+  dealerScore         Int
+
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([playedAt])
+}
+
+enum GameOutcome {
+  PLAYER_WIN
+  DEALER_WIN
+  PUSH
+  PLAYER_BLACKJACK
+  PLAYER_BUST
+  DEALER_BUST
+}
