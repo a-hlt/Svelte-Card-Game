@@ -422,9 +422,7 @@
 </script>
 
 <main class="relative h-screen overflow-hidden bg-black font-sans text-gray-200">
-	<div
-		class="absolute inset-0  opacity-20 mix-blend-soft-light"
-	></div>
+	<div class="absolute inset-0 opacity-20 mix-blend-soft-light"></div>
 
 	<div
 		class="relative z-10 mx-auto h-full max-w-4xl rounded-lg border-2 border-yellow-700/60 bg-gradient-to-br from-emerald-800 via-green-900 to-emerald-950 shadow-2xl"
@@ -442,7 +440,7 @@
 				<p class="mb-3 text-lg font-semibold">{statusMessage}</p>
 				{#if showSessionRestartButton}
 					<button
-						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold uppercase text-black shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
+						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold text-black uppercase shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
 						on:click={startNewGameSession}
 					>
 						Recommencer
@@ -458,7 +456,7 @@
 				<p class="mb-4 text-xl font-semibold">{statusMessage}</p>
 				{#if showNewGameButton}
 					<button
-						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold uppercase text-black shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
+						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold text-black uppercase shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
 						on:click={startNewGameSession}
 					>
 						Nouvelle Session
@@ -601,7 +599,7 @@
 					</div>
 					<div class="text-center">
 						<button
-							class="rounded-md border-b-4 border-green-800 bg-gradient-to-b from-green-500 to-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-white shadow-lg transition duration-150 ease-in-out hover:from-green-400 hover:to-green-600 active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-60 disabled:shadow-none"
+							class="rounded-md border-b-4 border-green-800 bg-gradient-to-b from-green-500 to-green-700 px-8 py-3 text-lg font-bold tracking-wider text-white uppercase shadow-lg transition duration-150 ease-in-out hover:from-green-400 hover:to-green-600 active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-60 disabled:shadow-none"
 							on:click={placeBetAndDeal}
 							disabled={currentBet <= 0 || gameStatus !== 'betting'}
 						>
@@ -614,14 +612,14 @@
 			<div class="mb-6 flex min-h-[4rem] items-center justify-center space-x-4 text-center">
 				{#if showActionButtons}
 					<button
-						class="rounded-lg border-b-4 border-blue-800 bg-gradient-to-b from-blue-500 to-blue-700 px-7 py-3 font-semibold uppercase tracking-wider text-white shadow-md transition duration-150 ease-in-out hover:from-blue-400 hover:to-blue-600 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
+						class="rounded-lg border-b-4 border-blue-800 bg-gradient-to-b from-blue-500 to-blue-700 px-7 py-3 font-semibold tracking-wider text-white uppercase shadow-md transition duration-150 ease-in-out hover:from-blue-400 hover:to-blue-600 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
 						on:click={hit}
 						disabled={!canHit || gameStatus === 'loading'}
 					>
 						Tirer
 					</button>
 					<button
-						class="rounded-lg border-b-4 border-amber-700 bg-gradient-to-b from-amber-400 to-amber-600 px-7 py-3 font-semibold uppercase tracking-wider text-black shadow-md transition duration-150 ease-in-out hover:from-amber-300 hover:to-amber-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
+						class="rounded-lg border-b-4 border-amber-700 bg-gradient-to-b from-amber-400 to-amber-600 px-7 py-3 font-semibold tracking-wider text-black uppercase shadow-md transition duration-150 ease-in-out hover:from-amber-300 hover:to-amber-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
 						on:click={stand}
 						disabled={!canStand || gameStatus === 'loading'}
 					>
@@ -631,7 +629,7 @@
 
 				{#if showNextHandButton}
 					<button
-						class="rounded-md border-b-4 border-gray-900 bg-gradient-to-b from-gray-600 to-gray-800 px-7 py-3 font-semibold uppercase tracking-wider text-white shadow-md transition duration-150 ease-in-out hover:from-gray-500 hover:to-gray-700 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
+						class="rounded-md border-b-4 border-gray-900 bg-gradient-to-b from-gray-600 to-gray-800 px-7 py-3 font-semibold tracking-wider text-white uppercase shadow-md transition duration-150 ease-in-out hover:from-gray-500 hover:to-gray-700 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:cursor-not-allowed disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:opacity-50 disabled:shadow-none"
 						on:click={resetHand}
 						disabled={gameStatus === 'loading'}
 					>
@@ -640,7 +638,7 @@
 				{/if}
 				{#if showNewGameButton && gameStatus === 'gameOver'}
 					<button
-						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold uppercase text-black shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
+						class="rounded-md border-b-4 border-yellow-700 bg-gradient-to-b from-yellow-400 to-yellow-600 px-6 py-2 font-bold text-black uppercase shadow-md transition duration-150 ease-in-out hover:from-yellow-300 hover:to-yellow-500 hover:shadow-lg active:translate-y-px active:scale-[0.98] active:border-b-2 active:brightness-95 disabled:border-gray-700 disabled:from-gray-500 disabled:to-gray-600 disabled:text-gray-400 disabled:opacity-60 disabled:shadow-none"
 						on:click={startNewGameSession}
 					>
 						Nouvelle Session
