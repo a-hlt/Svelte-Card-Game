@@ -1,0 +1,19 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // Correct, utilisera la valeur de votre .env
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+   passwordHash String // Vous en aurez besoin pour une vraie authentification
+   name      String?
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+}
