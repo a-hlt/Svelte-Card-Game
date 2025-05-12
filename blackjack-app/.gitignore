@@ -18,12 +18,9 @@ Thumbs.db
 !.env.example
 !.env.test
 
-<<<<<<< HEAD
-=======
 # Fichier de base de données SQLite de développement Prisma
 prisma/dev.db 
 
->>>>>>> e43ccff (pass2)
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
