@@ -21,6 +21,10 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/bcrypt": "^5.0.2",
+<<<<<<< HEAD
+=======
+		"@types/jsonwebtoken": "^9.0.9",
+>>>>>>> b1e2c82 (Correction Bug ?)
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
 		"eslint-plugin-svelte": "^3.0.0",
