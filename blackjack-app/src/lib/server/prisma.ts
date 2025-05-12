@@ -5,7 +5,7 @@ import { dev } from '$app/environment';
 const prisma =
 	global.__prisma ||
 	new PrismaClient({
-		// log: dev ? ['query', 'info', 'warn', 'error'] : ['error'], //  Pour logger les requêtes en dev
+		// log: dev ? ['query', 'info', 'warn', 'error'] : ['error'], //  Pour logger les requêtes en dev (option)
 	});
 
 if (dev) {
