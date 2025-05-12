@@ -1,17 +1,20 @@
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-}
 
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") // Correct, utilisera la valeur de votre .env
+}
+
 model User {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  username        String?   @unique
-  hashedPassword  String
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  passwordHash String // Vous en aurez besoin pour une vraie authentification
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   profileImageUrl String?
   balance         Decimal   @default(1000.00)
   createdAt       DateTime  @default(now())
