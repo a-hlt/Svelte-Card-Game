@@ -423,7 +423,7 @@
 
 <main class="relative h-screen overflow-hidden bg-black font-sans text-gray-200">
 	<div
-		class="absolute inset-0 bg-[url('/images/felt-texture.png')] opacity-20 mix-blend-soft-light"
+		class="absolute inset-0  opacity-20 mix-blend-soft-light"
 	></div>
 
 	<div
